@@ -1,9 +1,25 @@
 {
-  "name": "anydown-gantt",
+  "name": "@anydown/anydown-gantt",
   "version": "1.0.0",
-  "main": "dist/anydown-gantt.common.js",
+  "main": "dist/@anydown/anydown-gantt.common.js",
   "license": "MIT",
   "dependencies": {
     "d3-scale": "^2.0.0"
-  }
+  },
+  "devDependencies": {
+    "@vue/cli": "^3.0.0-beta.6",
+    "@vue/cli-plugin-babel": "^3.0.0-beta.2",
+    "@vue/cli-service": "^3.0.0-beta.6"
+  },
+  "scripts": {
+    "example": "vue build ./example/example.vue",
+    "prepublishOnly": "npm run build",
+    "build": "vue-cli-service build ./gantt.vue --target lib"
+  },
+  "directories": {
+    "example": "example"
+  },
+  "author": "hashrock",
+  "description": "",
+  "private": false
 }
