@@ -1,0 +1,9 @@
+{
+  "name": "anydown-gantt",
+  "version": "1.0.0",
+  "main": "dist/anydown-gantt.common.js",
+  "license": "MIT",
+  "dependencies": {
+    "d3-scale": "^2.0.0"
+  }
+}
