@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import Gantt from "../gantt.vue";
+import Gantt from "./components/gantt.vue";
 export default {
   data() {
     return {

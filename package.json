@@ -1,24 +1,30 @@
 {
   "name": "@anydown/anydown-gantt",
   "version": "1.0.0",
-  "main": "dist/@anydown/anydown-gantt.common.js",
+  "main": "dist/anydown-gantt.cjs.js",
   "license": "MIT",
   "dependencies": {
+    "vue": "^2.5.13",
     "d3-scale": "^2.0.0"
   },
   "devDependencies": {
     "@vue/cli": "^3.0.0-beta.6",
     "@vue/cli-plugin-babel": "^3.0.0-beta.2",
-    "@vue/cli-service": "^3.0.0-beta.6"
+    "@vue/cli-service": "^3.0.0-beta.6",
+    "bili": "^3.0.7",
+    "bootstrap": "^4.0.0",
+    "gh-pages": "^1.1.0",
+    "rollup-plugin-vue": "^3.0.0",
+    "vue-template-compiler": "^2.5.13"
   },
   "scripts": {
-    "example": "vue build ./example/example.vue",
+    "example:serve": "vue-cli-service serve",
     "prepublishOnly": "npm run build",
-    "build": "vue-cli-service build ./gantt.vue --target lib"
+    "build": "bili --plugin vue --inline --external vue",
+    "example:build": "vue-cli-service build",
+    "deploy": "gh-pages -d dist"
   },
-  "directories": {
-    "example": "example"
-  },
+  "files": ["dist"],
   "author": "hashrock",
   "description": "",
   "private": false

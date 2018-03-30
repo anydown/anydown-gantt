@@ -25,6 +25,7 @@ import * as util from "./gantt-util.js";
 import * as scale from "d3-scale";
 
 export default {
+  name: "Gantt",
   props: {
     input: String
   },
