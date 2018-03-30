@@ -1,6 +1,6 @@
 {
   "name": "@anydown/anydown-gantt",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "dist/anydown-gantt.cjs.js",
   "license": "MIT",
   "dependencies": {
@@ -24,7 +24,9 @@
     "example:build": "vue-cli-service build",
     "deploy": "gh-pages -d dist"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "author": "hashrock",
   "description": "",
   "private": false
