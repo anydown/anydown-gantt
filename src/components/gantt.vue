@@ -26,7 +26,15 @@
         </g>
 
         <!-- 本日 -->
-        <rect :x="todayX" :fill="isVscode ? '#343' : '#DDF'" y="-23" width="20" height="20" rx="10" ry="10" />
+        <rect
+          :x="todayX"
+          :fill="isVscode ? '#343' : '#DDF'"
+          y="-23"
+          width="20"
+          height="20"
+          rx="10"
+          ry="10"
+        />
 
         <g v-if="!longView">
           <!-- 日付 -->
@@ -153,11 +161,12 @@
 import * as gantt from "./gantt-compiler";
 import * as util from "./gantt-util.js";
 import * as scale from "d3-scale";
+import * as holiday_jp from "@holiday-jp/holiday_jp";
 
 export default {
   props: {
     input: String,
-    isVscode: Boolean,
+    isVscode: Boolean
   },
   data() {
     return {
@@ -331,10 +340,20 @@ function generateLineByRange(start, end, displayRange, svgWidth) {
     if (reldate.getDay() === 6) {
       color = "#8888FF";
     }
+
+    const isJa = navigator.language.indexOf("ja") >= 0;
+    if (isJa && holiday_jp.isHoliday(reldate)) {
+      color = "#FF8888";
+    }
+
     let monthStr = "";
+    const monthArray = isJa
+      ? util.getMonthArray()["ja-JP"]
+      : util.getMonthArray()["en"];
+
     if (month != reldate.getMonth() + 1) {
       month = reldate.getMonth() + 1;
-      monthStr = reldate.getMonth() + 1 + "月";
+      monthStr = monthArray[reldate.getMonth()];
     }
 
     lines.push({
