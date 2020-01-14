@@ -16,7 +16,7 @@ import Gantt from "../src/components/gantt.vue";
 export default {
   data() {
     return {
-      input: "タスクA 2018-03-30 2018-04-02"
+      input: "タスクA,2018-03-30,2018-04-02"
     };
   },
   methods: {
