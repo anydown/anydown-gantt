@@ -16,7 +16,14 @@ import Gantt from "../src/components/gantt.vue";
 export default {
   data() {
     return {
-      input: "タスクA,2018-03-30,2018-04-02"
+      input: `New Task,2020-01-20,2020-01-30
+New Task,2020-01-24,2020-02-03
+New Task,2020-01-25,2020-02-04
+New Task,2020-01-20,2020-01-30
+New Task,2020-01-20,2020-01-30
+New Task,2020-01-20,2020-01-30
+New Task,2020-01-20,2020-01-30
+New Task,2020-01-20,2020-01-30`
     };
   },
   methods: {

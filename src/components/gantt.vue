@@ -75,15 +75,6 @@
             height="24"
             @pointerdown="startDrag($event, index)"
           />
-          <text
-            class="taskname"
-            x="-4"
-            y="20"
-            font-size="12"
-            text-anchor="end"
-            fill="black"
-            line-height="32"
-          >{{task.name}}</text>
         </g>
         <rect
           v-if="dragoverIndex > -1 && dragoverIndex !== selectedIndex"
@@ -93,6 +84,19 @@
           :width="svgWidth"
           height="32"
         />
+        <text
+          v-for="(task, index) in tasks"
+          :key="index"
+          class="taskname"
+          :x="(scale(task.start) + 4) > 0 ? (scale(task.start) + 4) : 4"
+          :y="index * 32 + 16"
+          font-size="12"
+          text-anchor="start"
+          fill="black"
+          line-height="32"
+          alignment-baseline="middle"
+          pointer-events="none"
+        >{{task.name}}</text>
       </g>
 
       <!-- Month View -->
@@ -161,7 +165,7 @@
 import * as gantt from "./gantt-compiler";
 import * as util from "./gantt-util.js";
 import * as scale from "d3-scale";
-const holiday = require('@holiday-jp/holiday_jp');
+const holiday = require("@holiday-jp/holiday_jp");
 // import * as holiday from "@holiday-jp/holiday_jp";
 
 export default {
@@ -369,7 +373,7 @@ function generateLineByRange(start, end, displayRange, svgWidth) {
 </script>
 <style>
 .task {
-  fill: rgb(144, 144, 255);
+  fill: #b1b1ff;
   cursor: pointer;
 }
 
