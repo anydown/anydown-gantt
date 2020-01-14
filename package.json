@@ -2,7 +2,6 @@
   "name": "@anydown/anydown-gantt",
   "version": "1.0.3",
   "main": "dist/anydown-gantt.js",
-  "module": "dist/anydown-gantt.es.js",
   "license": "MIT",
   "dependencies": {
     "d3-scale": "^3.2.1",
