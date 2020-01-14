@@ -161,7 +161,8 @@
 import * as gantt from "./gantt-compiler";
 import * as util from "./gantt-util.js";
 import * as scale from "d3-scale";
-import * as holiday_jp from "@holiday-jp/holiday_jp";
+const holiday = require('@holiday-jp/holiday_jp');
+// import * as holiday from "@holiday-jp/holiday_jp";
 
 export default {
   props: {
@@ -342,7 +343,7 @@ function generateLineByRange(start, end, displayRange, svgWidth) {
     }
 
     const isJa = navigator.language.indexOf("ja") >= 0;
-    if (isJa && holiday_jp.isHoliday(reldate)) {
+    if (isJa && holiday.isHoliday(reldate)) {
       color = "#FF8888";
     }
 
