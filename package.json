@@ -1,6 +1,6 @@
 {
   "name": "@anydown/anydown-gantt",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "main": "dist/anydown-gantt.js",
   "module": "dist/anydown-gantt.es.js",
   "license": "MIT",
