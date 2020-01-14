@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.1.1"></a>
+## [1.1.1](https://github-private/anydown/anydown-gantt/compare/v1.1.0...v1.1.1) (2020-01-14)
+
+
+### Bug Fixes
+
+* **holiday:** Fix rollup removing import issue ([30f58b5](https://github-private/anydown/anydown-gantt/commit/30f58b5))
+
+
+
 <a name="1.1.0"></a>
 # [1.1.0](https://github-private/anydown/anydown-gantt/compare/v1.0.4...v1.1.0) (2020-01-14)
 
