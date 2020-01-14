@@ -26,7 +26,7 @@
         </g>
 
         <!-- 本日 -->
-        <rect :x="todayX" fill="#343" y="-23" width="20" height="20" rx="10" ry="10" />
+        <rect :x="todayX" :fill="isVscode ? '#343' : '#DDF'" y="-23" width="20" height="20" rx="10" ry="10" />
 
         <g v-if="!longView">
           <!-- 日付 -->
@@ -156,7 +156,8 @@ import * as scale from "d3-scale";
 
 export default {
   props: {
-    input: String
+    input: String,
+    isVscode: Boolean,
   },
   data() {
     return {
