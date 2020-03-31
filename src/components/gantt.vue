@@ -219,6 +219,7 @@ export default {
       if (e.offsetX > this.scale(this.selectedItem.end) - 10) {
         this.dragging = "resize-x";
       }
+      this.onDrag(e);
     },
     stopDrag() {
       if (this.dragging !== "none") {
