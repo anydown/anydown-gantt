@@ -1,12 +1,10 @@
 <template>
   <div>
     <div>
-
-    <textarea v-model="input"></textarea>
+      <textarea v-model="input"></textarea>
     </div>
     <div>
-    <gantt :input="input" @change="update"></gantt>
-
+      <gantt :input="input" @change="update"></gantt>
     </div>
   </div>
 </template>
@@ -16,14 +14,10 @@ import Gantt from "../src/components/gantt.vue";
 export default {
   data() {
     return {
-      input: `New Task,2020-01-20,2020-01-30
-New Task,2020-01-24,2020-02-03
-New Task,2020-01-25,2020-02-04
-New Task,2020-01-20,2020-01-30
-New Task,2020-01-20,2020-01-30
-New Task,2020-01-20,2020-01-30
-New Task,2020-01-20,2020-01-30
-New Task,2020-01-20,2020-01-30`
+      input: `New Task1,2020-04-08,2020-04-20
+New Task2,2020-04-17,2020-04-26
+New Task3,2020-04-24,2020-05-01
+`
     };
   },
   methods: {
