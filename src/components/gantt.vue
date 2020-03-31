@@ -75,7 +75,20 @@
               :width="scaleLength(task.end - task.start)"
               height="24"
               @pointerdown="startDrag($event, index)"
+              @dblclick="editTask(index)"
             />
+
+            <!-- inline editing -->
+            <foreignObject
+              class="inlineEditing"
+              height="24"
+              :width="scaleLength(task.end - task.start) < 200 ? 200 : scaleLength(task.end - task.start)"
+              v-if="editing === index"
+            >
+              <form @submit.prevent="endEditing(index)">
+                <input class="editingText" v-model="editingText" @blur="endEditing(index)" />
+              </form>
+            </foreignObject>
           </g>
         </g>
         <rect
@@ -98,6 +111,7 @@
           line-height="32"
           alignment-baseline="middle"
           pointer-events="none"
+          v-show="editing !== index"
         >{{task.name}}</text>
       </g>
 
@@ -188,10 +202,30 @@ export default {
       dragging: "none",
       dragoverIndex: -1,
       longView: false,
-      displayOffset: 0
+      displayOffset: 0,
+      editing: -1,
+      editingText: ""
     };
   },
   methods: {
+    editTask(index) {
+      this.editing = index;
+      this.editingText = this.tasks[this.editing].name;
+      this.$nextTick(() => {
+        const el = this.$el.querySelector(".editingText");
+        if (el) {
+          el.focus();
+          el.setSelectionRange(0, el.value.length);
+        }
+      });
+    },
+    endEditing() {
+      if (this.editing >= 0) {
+        this.tasks[this.editing].name = this.editingText;
+        this.editing = -1;
+        this.$emit("change", gantt.serialize(this.tasks));
+      }
+    },
     onDrag(e) {
       if (this.dragging === "move") {
         const len = this.selectedItem.end - this.selectedItem.start;
@@ -271,6 +305,8 @@ export default {
         end: util.getRelativeDate(1).getTime()
       });
       this.$emit("change", gantt.serialize(this.tasks));
+      this.editTask(this.tasks.length - 1);
+      // this.editingText = "New Task";
     },
     moveRange(offset) {
       this.displayOffset += offset;
@@ -401,5 +437,19 @@ svg.gantt {
 }
 .dragover {
   opacity: 0.1;
+}
+
+.inlineEditing {
+  transform: translate(0px, 4px);
+}
+
+.inlineEditing form {
+  display: flex;
+  height: 100%;
+  margin-top: 4;
+}
+.editingText {
+  flex: 1;
+  font-size: 12;
 }
 </style>
