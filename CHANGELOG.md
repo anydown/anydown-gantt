@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.1.3"></a>
+## [1.1.3](https://github.com/anydown/anydown-gantt/compare/v1.1.2...v1.1.3) (2020-03-31)
+
+
+### Bug Fixes
+
+* add g for tasks to avoid key duplication warning ([cdc6eaf](https://github.com/anydown/anydown-gantt/commit/cdc6eaf))
+
+
+
 <a name="1.1.2"></a>
 ## [1.1.2](https://github-private/anydown/anydown-gantt/compare/v1.1.1...v1.1.2) (2020-01-14)
 
