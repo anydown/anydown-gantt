@@ -61,20 +61,22 @@
           />
         </g>
         <!-- タスク -->
-        <g
-          v-for="(task, index) in tasks"
-          :transform="`translate(${scale(task.start)}, ${index * 32})`"
-          :key="index"
-          :class="{'dragging': index === selectedIndex}"
-        >
-          <rect
-            class="task"
-            x="0"
-            y="4"
-            :width="scaleLength(task.end - task.start)"
-            height="24"
-            @pointerdown="startDrag($event, index)"
-          />
+        <g>
+          <g
+            v-for="(task, index) in tasks"
+            :transform="`translate(${scale(task.start)}, ${index * 32})`"
+            :key="index"
+            :class="{'dragging': index === selectedIndex}"
+          >
+            <rect
+              class="task"
+              x="0"
+              y="4"
+              :width="scaleLength(task.end - task.start)"
+              height="24"
+              @pointerdown="startDrag($event, index)"
+            />
+          </g>
         </g>
         <rect
           v-if="dragoverIndex > -1 && dragoverIndex !== selectedIndex"
