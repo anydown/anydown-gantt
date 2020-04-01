@@ -1,24 +1,37 @@
 <template>
-  <div>
+  <div class="gantt__root">
     <svg
       class="gantt"
       :width="svgWidth"
       :height="tasks.length * 32 + 48"
       @pointermove="onDrag"
       @pointerup="stopDrag"
+      ref="gantt"
+      style="background: white;"
     >
       <!-- 全体を32px下げる（日付用余白） -->
       <g transform="translate(0, 48)">
         <!-- 背景 -->
-        <rect class="background" x="0" y="0" :width="svgWidth" :height="tasks.length * 32" />
+        <rect
+          class="background"
+          x="0"
+          y="0"
+          fill="#eee"
+          :width="svgWidth"
+          :height="tasks.length * 32"
+        />
         <g>
           <!-- 月 -->
           <text
             v-for="(line, index) in lines"
-            :x="line.x"
+            :x="line.x + 0.5"
             y="-28"
             :key="index"
             class="labelMonth"
+            text-anchor="start"
+            font-weight="900"
+            font-size="0.8rem"
+            fill="#55a755"
           >{{line.labelMonth}}</text>
         </g>
 
@@ -46,6 +59,8 @@
             :x2="line.x"
             :y2="tasks.length * 32"
             class="gridline"
+            stroke="rgb(253, 253, 253)"
+            stroke-width="2"
             :key="index"
           />
         </g>
@@ -59,6 +74,7 @@
           >
             <rect
               class="task"
+              fill="#b1b1ff"
               x="0"
               y="4"
               :width="scaleLength(task.end - task.start)"
@@ -140,7 +156,7 @@
       <label class="navBottom__label">
         <input type="checkbox" v-model="longView" />Long
       </label>
-      <button class="navBottom__button">Export</button>
+      <button class="navBottom__button" @click="exportPng">Export</button>
     </div>
   </div>
 </template>
@@ -174,6 +190,10 @@ export default {
     };
   },
   methods: {
+    exportPng() {
+      // scale 2x
+      util.saveSvgAsPng(document, this.$refs.gantt, 2);
+    },
     editTask(index) {
       this.editing = index;
       this.editingText = this.tasks[this.editing].name;
@@ -377,22 +397,10 @@ function generateLineByRange(start, end, displayRange, svgWidth) {
 }
 </script>
 <style>
-svg.gantt {
-  background: #fff;
-}
 .task {
-  fill: #b1b1ff;
   cursor: pointer;
 }
 
-.background {
-  fill: #eee;
-}
-
-.gridline {
-  stroke: rgb(253, 253, 253);
-  stroke-width: 2;
-}
 svg.gantt {
   cursor: default;
   user-select: none;
@@ -421,26 +429,20 @@ svg.gantt {
   flex: 1;
   font-size: 12;
 }
-
-.labelMonth {
-  text-anchor: start;
-  font-weight: 900;
-  font-size: 0.8rem;
-  fill: #55a755;
-}
-
 .navBottom {
   display: flex;
   justify-content: flex-end;
 }
+
 .navBottom__label {
-  font-size: 0.8em;
+  font-size: 0.7em;
 }
 .navBottom__button {
-  border: 1px solid #999;
+  border: 1px solid #aaa;
   background: white;
   border-radius: 4px;
   margin-left: 1em;
-  font-size: 0.8em;
+  font-size: 0.7em;
+  cursor: pointer;
 }
 </style>
