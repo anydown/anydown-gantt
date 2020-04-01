@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.3.0"></a>
+# [1.3.0](https://github-private/anydown/anydown-gantt/compare/v1.2.0...v1.3.0) (2020-04-01)
+
+
+### Bug Fixes
+
+* add white background to simplify coloring, to increase text-color contrasts ([b9d9652](https://github-private/anydown/anydown-gantt/commit/b9d9652))
+* simplify longView ([8e7ab29](https://github-private/anydown/anydown-gantt/commit/8e7ab29))
+
+
+### Features
+
+* PNG export (instead, all SVG attrs moved to inline) ([930e61e](https://github-private/anydown/anydown-gantt/commit/930e61e))
+
+
+
 <a name="1.2.0"></a>
 # [1.2.0](https://github.com/anydown/anydown-gantt/compare/v1.1.3...v1.2.0) (2020-03-31)
 
