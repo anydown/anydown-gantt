@@ -17,24 +17,13 @@
             v-for="(line, index) in lines"
             :x="line.x"
             y="-28"
-            text-anchor="start"
-            font-weight="900"
-            font-size="0.8rem"
-            fill="#9C9"
             :key="index"
+            class="labelMonth"
           >{{line.labelMonth}}</text>
         </g>
 
         <!-- 本日 -->
-        <rect
-          :x="todayX"
-          :fill="isVscode ? '#343' : '#DDF'"
-          y="-23"
-          width="20"
-          height="20"
-          rx="10"
-          ry="10"
-        />
+        <rect :x="todayX" fill="#DDF" y="-23" width="20" height="20" rx="10" ry="10" />
 
         <g v-if="!longView">
           <!-- 日付 -->
@@ -186,8 +175,7 @@ const holiday = require("@holiday-jp/holiday_jp");
 
 export default {
   props: {
-    input: String,
-    isVscode: Boolean
+    input: String
   },
   data() {
     return {
@@ -377,17 +365,17 @@ function generateLineByRange(start, end, displayRange, svgWidth) {
   for (let i = 0; i < displayRangeLength; i++) {
     const reldate = util.getRelativeDate(displayRange.start + i);
     const t = ((reldate.getTime() - start) / len) * svgWidth;
-    let color = "#888888";
+    let color = "#666666";
     if (reldate.getDay() === 0) {
-      color = "#FF8888";
+      color = "#FF6666";
     }
     if (reldate.getDay() === 6) {
-      color = "#8888FF";
+      color = "#6666FF";
     }
 
     const isJa = navigator.language.indexOf("ja") >= 0;
     if (isJa && holiday.isHoliday(reldate)) {
-      color = "#FF8888";
+      color = "#FF6666";
     }
 
     let monthStr = "";
@@ -411,13 +399,16 @@ function generateLineByRange(start, end, displayRange, svgWidth) {
 }
 </script>
 <style>
+svg.gantt {
+  background: #fff;
+}
 .task {
   fill: #b1b1ff;
   cursor: pointer;
 }
 
 .background {
-  fill: #f5f5f5;
+  fill: #eee;
 }
 
 .gridline {
@@ -451,5 +442,12 @@ svg.gantt {
 .editingText {
   flex: 1;
   font-size: 12;
+}
+
+.labelMonth {
+  text-anchor: start;
+  font-weight: 900;
+  font-size: 0.8rem;
+  fill: #55a755;
 }
 </style>
