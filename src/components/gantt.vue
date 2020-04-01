@@ -1,40 +1,42 @@
 <template>
-  <div>
+  <div class="gantt__root">
     <svg
       class="gantt"
       :width="svgWidth"
       :height="tasks.length * 32 + 48"
       @pointermove="onDrag"
       @pointerup="stopDrag"
+      ref="gantt"
+      style="background: white;"
     >
       <!-- 全体を32px下げる（日付用余白） -->
       <g transform="translate(0, 48)">
         <!-- 背景 -->
-        <rect class="background" x="0" y="0" :width="svgWidth" :height="tasks.length * 32" />
+        <rect
+          class="background"
+          x="0"
+          y="0"
+          fill="#eee"
+          :width="svgWidth"
+          :height="tasks.length * 32"
+        />
         <g>
           <!-- 月 -->
           <text
             v-for="(line, index) in lines"
-            :x="line.x"
+            :x="line.x + 0.5"
             y="-28"
+            :key="index"
+            class="labelMonth"
             text-anchor="start"
             font-weight="900"
             font-size="0.8rem"
-            fill="#9C9"
-            :key="index"
+            fill="#55a755"
           >{{line.labelMonth}}</text>
         </g>
 
         <!-- 本日 -->
-        <rect
-          :x="todayX"
-          :fill="isVscode ? '#343' : '#DDF'"
-          y="-23"
-          width="20"
-          height="20"
-          rx="10"
-          ry="10"
-        />
+        <rect :x="todayX" fill="#DDF" y="-23" width="20" height="20" rx="10" ry="10" />
 
         <g v-if="!longView">
           <!-- 日付 -->
@@ -57,6 +59,8 @@
             :x2="line.x"
             :y2="tasks.length * 32"
             class="gridline"
+            stroke="rgb(253, 253, 253)"
+            stroke-width="2"
             :key="index"
           />
         </g>
@@ -70,6 +74,7 @@
           >
             <rect
               class="task"
+              fill="#b1b1ff"
               x="0"
               y="4"
               :width="scaleLength(task.end - task.start)"
@@ -115,39 +120,10 @@
         >{{task.name}}</text>
       </g>
 
-      <!-- Month View -->
-      <g
-        :transform="`translate(${svgWidth - 24 * 4 - 0.5}, 0.5)`"
-        @mouseenter="longView = true"
-        @mouseleave="longView = false"
-        style="cursor: pointer;"
-      >
-        <rect fill="white" x="0" y="0" width="20" height="20" rx="4" ry="4" />
-        <line stroke-linecap="round" stroke-width="2" x1="5" y1="5" x2="15" y2="5" stroke="#999" />
-        <line
-          stroke-linecap="round"
-          stroke-width="2"
-          x1="7.5"
-          y1="10"
-          x2="17.5"
-          y2="10"
-          stroke="#999"
-        />
-        <line
-          stroke-linecap="round"
-          stroke-width="2"
-          x1="10"
-          y1="15"
-          x2="20"
-          y2="15"
-          stroke="#999"
-        />
-      </g>
-
       <!-- 前へ -->
       <g
         :transform="`translate(${svgWidth - 24 * 3 - 0.5}, 0.5)`"
-        @click="moveRange(-7)"
+        @click="moveRange(-1)"
         style="cursor: pointer;"
       >
         <rect fill="white" x="0" y="0" width="20" height="20" rx="4" ry="4" />
@@ -157,7 +133,7 @@
       <!-- 次へ -->
       <g
         :transform="`translate(${svgWidth - 24 * 2 - 0.5}, 0.5)`"
-        @click="moveRange(7)"
+        @click="moveRange(1)"
         style="cursor: pointer;"
       >
         <rect fill="white" x="0" y="0" width="20" height="20" rx="4" ry="4" />
@@ -175,6 +151,13 @@
         <line x1="5" x2="15" y1="10" y2="10" stroke="ForestGreen" />
       </g>
     </svg>
+
+    <div class="navBottom">
+      <label class="navBottom__label">
+        <input type="checkbox" v-model="longView" />Long
+      </label>
+      <button class="navBottom__button" @click="exportPng">Export</button>
+    </div>
   </div>
 </template>
 <script>
@@ -186,8 +169,7 @@ const holiday = require("@holiday-jp/holiday_jp");
 
 export default {
   props: {
-    input: String,
-    isVscode: Boolean
+    input: String
   },
   data() {
     return {
@@ -208,6 +190,10 @@ export default {
     };
   },
   methods: {
+    exportPng() {
+      // scale 2x
+      util.saveSvgAsPng(document, this.$refs.gantt, 2);
+    },
     editTask(index) {
       this.editing = index;
       this.editingText = this.tasks[this.editing].name;
@@ -306,10 +292,10 @@ export default {
       });
       this.$emit("change", gantt.serialize(this.tasks));
       this.editTask(this.tasks.length - 1);
-      // this.editingText = "New Task";
     },
     moveRange(offset) {
-      this.displayOffset += offset;
+      const moveAmount = offset * (this.longView ? 31 : 7);
+      this.displayOffset += moveAmount;
     }
   },
   watch: {
@@ -329,8 +315,8 @@ export default {
       const viewRange = Math.floor(this.svgWidth / columnWidth);
       return this.longView
         ? {
-            start: 31 * -1,
-            end: 31 * -1 + viewRange
+            start: 31 * -1 + this.displayOffset,
+            end: 31 * -1 + viewRange + this.displayOffset
           }
         : {
             start: -2 + this.displayOffset,
@@ -377,17 +363,17 @@ function generateLineByRange(start, end, displayRange, svgWidth) {
   for (let i = 0; i < displayRangeLength; i++) {
     const reldate = util.getRelativeDate(displayRange.start + i);
     const t = ((reldate.getTime() - start) / len) * svgWidth;
-    let color = "#888888";
+    let color = "#666666";
     if (reldate.getDay() === 0) {
-      color = "#FF8888";
+      color = "#FF6666";
     }
     if (reldate.getDay() === 6) {
-      color = "#8888FF";
+      color = "#6666FF";
     }
 
     const isJa = navigator.language.indexOf("ja") >= 0;
     if (isJa && holiday.isHoliday(reldate)) {
-      color = "#FF8888";
+      color = "#FF6666";
     }
 
     let monthStr = "";
@@ -412,18 +398,9 @@ function generateLineByRange(start, end, displayRange, svgWidth) {
 </script>
 <style>
 .task {
-  fill: #b1b1ff;
   cursor: pointer;
 }
 
-.background {
-  fill: #f5f5f5;
-}
-
-.gridline {
-  stroke: rgb(253, 253, 253);
-  stroke-width: 2;
-}
 svg.gantt {
   cursor: default;
   user-select: none;
@@ -451,5 +428,21 @@ svg.gantt {
 .editingText {
   flex: 1;
   font-size: 12;
+}
+.navBottom {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.navBottom__label {
+  font-size: 0.7em;
+}
+.navBottom__button {
+  border: 1px solid #aaa;
+  background: white;
+  border-radius: 4px;
+  margin-left: 1em;
+  font-size: 0.7em;
+  cursor: pointer;
 }
 </style>

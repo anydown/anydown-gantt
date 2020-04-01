@@ -65,3 +65,34 @@ export function getMonthArray() {
     ]
   };
 }
+export function saveSvgAsPng(document, el, ratio) {
+  const svgData = new XMLSerializer().serializeToString(el);
+  const canvas = document.createElement("canvas");
+  const width = el.width.baseVal.value;
+  const height = el.height.baseVal.value;
+  canvas.width = width * ratio;
+  canvas.height = height * ratio;
+
+  const ctx = canvas.getContext("2d");
+  const image = new Image();
+  image.onload = function() {
+    ctx.drawImage(
+      image,
+      0,
+      0,
+      width,
+      height,
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    );
+    const a = document.createElement("a");
+    a.href = canvas.toDataURL("image/png");
+    a.setAttribute("download", "gantt.png");
+    a.dispatchEvent(new MouseEvent("click"));
+  };
+  image.src =
+    "data:image/svg+xml;charset=utf-8;base64," +
+    btoa(unescape(encodeURIComponent(svgData)));
+}
