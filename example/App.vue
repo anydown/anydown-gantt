@@ -11,23 +11,41 @@
 
 <script>
 import Gantt from "../src/components/gantt.vue";
+
+function zeropad(str) {
+  return ("00" + str).slice(-2);
+}
+
+const d = new Date();
+const exampleTask1 = `${d.getFullYear()}-${zeropad(d.getMonth() + 1)}-${zeropad(
+  d.getDate()
+)}`;
+d.setDate(d.getDate() + 3);
+const exampleTask2 = `${d.getFullYear()}-${zeropad(d.getMonth() + 1)}-${zeropad(
+  d.getDate()
+)}`;
+d.setDate(d.getDate() + 3);
+const exampleTask3 = `${d.getFullYear()}-${zeropad(d.getMonth() + 1)}-${zeropad(
+  d.getDate()
+)}`;
+
 export default {
   data() {
     return {
-      input: `New Task1,2020-04-08,2020-04-20
-New Task2,2020-04-17,2020-04-26
-New Task3,2020-04-24,2020-05-01
-`
+      input: `New Task1,${exampleTask1},${exampleTask2}
+New Task2,${exampleTask2},${exampleTask3}
+New Task3,${exampleTask2},${exampleTask3}
+`,
     };
   },
   methods: {
     update(value) {
       this.input = value;
-    }
+    },
   },
   components: {
-    Gantt
-  }
+    Gantt,
+  },
 };
 </script>
 
