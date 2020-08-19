@@ -7,7 +7,17 @@
       @pointermove="onDrag"
       @pointerup="stopDrag"
       ref="gantt"
-      style="background: white;"
+      style="background: white; outline: none;"
+      tabindex="0"
+      @keydown.ctrl.up="selectMoveUp"
+      @keydown.ctrl.down="selectMoveDown"
+      @keydown.ctrl.left="selectMoveLeft"
+      @keydown.ctrl.right="selectMoveRight"
+      @keydown.up.exact="selectUp"
+      @keydown.down.exact="selectDown"
+      @keydown.delete.exact="selectRemove"
+      @keydown.enter="selectEdit"
+      @blur="onBlur"
     >
       <!-- 全体を32px下げる（日付用余白） -->
       <g transform="translate(0, 48)">
@@ -70,10 +80,11 @@
             v-for="(task, index) in tasks"
             :transform="`translate(${scale(task.start)}, ${index * 32})`"
             :key="index"
-            :class="{'dragging': index === selectedIndex}"
+            :class="{'dragging': index === draggingIndex}"
           >
             <rect
               class="task"
+              :class="{'selected': index === selectedIndex}"
               fill="#b1b1ff"
               x="0"
               y="4"
@@ -109,7 +120,7 @@
           </g>
         </g>
         <rect
-          v-if="dragoverIndex > -1 && dragoverIndex !== selectedIndex"
+          v-if="dragoverIndex > -1 && dragoverIndex !== draggingIndex"
           class="dragover"
           x="0"
           :y="32 * dragoverIndex"
@@ -191,6 +202,7 @@ export default {
       tasks: [],
       taskName: "",
       svgWidth: 600,
+      draggingIndex: -1,
       selectedIndex: -1,
       dragOffset: {
         x: 0,
@@ -212,6 +224,7 @@ export default {
     editTask(index) {
       this.editing = index;
       this.editingText = this.tasks[this.editing].name;
+      this.selectedIndex = -1;
       this.$nextTick(() => {
         const el = this.$el.querySelector(".editingText");
         if (el) {
@@ -223,21 +236,29 @@ export default {
     endEditing() {
       if (this.editing >= 0) {
         this.tasks[this.editing].name = this.editingText;
+        this.selectedIndex = this.editing;
         this.editing = -1;
         this.$emit("change", gantt.serialize(this.tasks));
+
+        this.$nextTick(() => {
+          const el = this.$el.querySelector(".gantt");
+          if (el) {
+            el.focus();
+          }
+        });
       }
     },
     onDrag(e) {
       if (this.dragging === "move") {
-        const len = this.selectedItem.end - this.selectedItem.start;
+        const len = this.draggingItem.end - this.draggingItem.start;
         //差分値を基点に反映
-        this.selectedItem.start = this.invert(e.offsetX - this.dragOffset.x);
-        this.selectedItem.end = this.selectedItem.start + len;
+        this.draggingItem.start = this.invert(e.offsetX - this.dragOffset.x);
+        this.draggingItem.end = this.draggingItem.start + len;
 
         this.dragoverIndex = Math.floor((e.offsetY - 48) / 32);
       }
       if (this.dragging === "resize-x") {
-        this.selectedItem.end = this.invert(e.offsetX);
+        this.draggingItem.end = this.invert(e.offsetX);
       }
     },
     startDrag(e, index) {
@@ -245,35 +266,38 @@ export default {
       el.setPointerCapture(e.pointerId);
 
       this.dragging = "move";
+      this.draggingIndex = index;
       this.selectedIndex = index;
       //ページ左上とオブジェクト左上の差分から、ドラッグ開始位置（オブジェクト相対座標）を取得
-      this.dragOffset.x = e.offsetX - this.scale(this.selectedItem.start);
+      this.dragOffset.x = e.offsetX - this.scale(this.draggingItem.start);
       this.dragOffset.y = e.offsetY - index * 32 - 48;
 
-      const len = this.selectedItem.end - this.selectedItem.start;
+      const len = this.draggingItem.end - this.draggingItem.start;
       this.onDrag(e);
     },
-    startResize(e, index){
+    startResize(e, index) {
       const el = e.currentTarget;
       el.setPointerCapture(e.pointerId);
 
+      this.draggingIndex = index;
       this.selectedIndex = index;
-      this.dragOffset.x = e.offsetX - this.scale(this.selectedItem.start);
+      this.dragOffset.x = e.offsetX - this.scale(this.draggingItem.start);
       this.dragOffset.y = e.offsetY - index * 32 - 48;
       this.dragging = "resize-x";
       this.onDrag(e);
     },
     stopDrag() {
       if (this.dragging !== "none") {
-        this.selectedItem.start = util.roundHMSfromEpoc(
-          this.selectedItem.start
+        this.draggingItem.start = util.roundHMSfromEpoc(
+          this.draggingItem.start
         );
-        this.selectedItem.end = util.roundHMSfromEpoc(this.selectedItem.end);
+        this.draggingItem.end = util.roundHMSfromEpoc(this.draggingItem.end);
       }
       if (this.dragging === "move") {
-        if (this.selectedIndex !== this.dragoverIndex) {
-          const task = this.tasks.splice(this.selectedIndex, 1);
+        if (this.draggingIndex !== this.dragoverIndex) {
+          const task = this.tasks.splice(this.draggingIndex, 1);
           this.tasks.splice(this.dragoverIndex, 0, task[0]);
+          this.selectedIndex = this.dragoverIndex;
         }
       }
       if (this.dragging !== "none") {
@@ -281,7 +305,7 @@ export default {
       }
 
       this.dragging = "none";
-      this.selectedIndex = -1;
+      this.draggingIndex = -1;
       this.dragoverIndex = -1;
     },
     scaleLength(epocdiff) {
@@ -319,6 +343,79 @@ export default {
       const moveAmount = offset * (this.longView ? 31 : 7);
       this.displayOffset += moveAmount;
     },
+    selectMoveDown() {
+      if (this.selectedIndex === -1) {
+        return;
+      }
+      if (this.selectedIndex < this.tasks.length - 1) {
+        const task = this.tasks.splice(this.selectedIndex, 1);
+        this.tasks.splice(this.selectedIndex + 1, 0, task[0]);
+        this.selectedIndex = this.selectedIndex + 1;
+        this.$emit("change", gantt.serialize(this.tasks));
+      }
+    },
+    selectMoveUp() {
+      if (this.selectedIndex === -1) {
+        return;
+      }
+      if (this.selectedIndex > 0) {
+        const task = this.tasks.splice(this.selectedIndex, 1);
+        this.tasks.splice(this.selectedIndex - 1, 0, task[0]);
+        this.selectedIndex = this.selectedIndex - 1;
+        this.$emit("change", gantt.serialize(this.tasks));
+      }
+    },
+    selectMoveLeft() {
+      if (this.selectedIndex === -1) {
+        return;
+      }
+      this.selectedItem.start -= 24 * 60 * 60 * 1000;
+      this.selectedItem.end -= 24 * 60 * 60 * 1000;
+      this.$emit("change", gantt.serialize(this.tasks));
+    },
+    selectMoveRight() {
+      if (this.selectedIndex === -1) {
+        return;
+      }
+      this.selectedItem.start += 24 * 60 * 60 * 1000;
+      this.selectedItem.end += 24 * 60 * 60 * 1000;
+      this.$emit("change", gantt.serialize(this.tasks));
+    },
+    selectUp() {
+      if (this.selectedIndex === -1) {
+        return;
+      }
+      if (this.selectedIndex > 0) {
+        this.selectedIndex -= 1;
+      }
+    },
+    selectDown() {
+      if (this.selectedIndex === -1) {
+        return;
+      }
+      if (this.selectedIndex < this.tasks.length - 1) {
+        this.selectedIndex += 1;
+      }
+    },
+    selectRemove() {
+      if (this.selectedIndex === -1) {
+        return;
+      }
+      this.tasks.splice(this.selectedIndex, 1);
+      this.$emit("change", gantt.serialize(this.tasks));
+    },
+    selectEdit(ev) {
+      if (this.selectedIndex === -1) {
+        return;
+      }
+      this.$nextTick(() => {
+        this.editTask(this.selectedIndex);
+      });
+      ev.preventDefault();
+    },
+    onBlur() {
+      this.selectedIndex = -1;
+    },
   },
   watch: {
     input() {
@@ -344,6 +441,9 @@ export default {
             start: -2 + this.displayOffset,
             end: -2 + viewRange + this.displayOffset,
           };
+    },
+    draggingItem() {
+      return this.tasks[this.draggingIndex];
     },
     selectedItem() {
       return this.tasks[this.selectedIndex];
@@ -421,6 +521,9 @@ function generateLineByRange(start, end, displayRange, svgWidth) {
 <style>
 .task {
   cursor: pointer;
+}
+.task.selected {
+  stroke: black;
 }
 
 svg.gantt {
