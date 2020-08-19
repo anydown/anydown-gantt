@@ -120,35 +120,38 @@
         >{{task.name}}</text>
       </g>
 
-      <!-- 前へ -->
-      <g
-        :transform="`translate(${svgWidth - 24 * 3 - 0.5}, 0.5)`"
-        @click="moveRange(-1)"
-        style="cursor: pointer;"
-      >
-        <rect fill="white" x="0" y="0" width="20" height="20" rx="4" ry="4" />
-        <polyline points="15 5 5 10 15 15" stroke="#999" fill="none" />
-      </g>
+      <!-- 印刷時には不可視 -->
+      <g class="topNav" style="opacity: 0;">
+        <!-- 前へ -->
+        <g
+          :transform="`translate(${svgWidth - 24 * 3 - 0.5}, 0.5)`"
+          @click="moveRange(-1)"
+          style="cursor: pointer;"
+        >
+          <rect fill="white" x="0" y="0" width="20" height="20" rx="4" ry="4" />
+          <polyline points="15 5 5 10 15 15" stroke="#999" fill="none" />
+        </g>
 
-      <!-- 次へ -->
-      <g
-        :transform="`translate(${svgWidth - 24 * 2 - 0.5}, 0.5)`"
-        @click="moveRange(1)"
-        style="cursor: pointer;"
-      >
-        <rect fill="white" x="0" y="0" width="20" height="20" rx="4" ry="4" />
-        <polyline points="5 5 15 10 5 15" stroke="#999" fill="none" />
-      </g>
+        <!-- 次へ -->
+        <g
+          :transform="`translate(${svgWidth - 24 * 2 - 0.5}, 0.5)`"
+          @click="moveRange(1)"
+          style="cursor: pointer;"
+        >
+          <rect fill="white" x="0" y="0" width="20" height="20" rx="4" ry="4" />
+          <polyline points="5 5 15 10 5 15" stroke="#999" fill="none" />
+        </g>
 
-      <!-- タスク追加 -->
-      <g
-        :transform="`translate(${svgWidth - 24.5}, 0.5)`"
-        @click="addTask"
-        style="cursor: pointer;"
-      >
-        <rect fill="white" stroke="#999" x="0" y="0" width="20" height="20" rx="4" ry="4" />
-        <line x1="10" x2="10" y1="5" y2="15" stroke="ForestGreen" />
-        <line x1="5" x2="15" y1="10" y2="10" stroke="ForestGreen" />
+        <!-- タスク追加 -->
+        <g
+          :transform="`translate(${svgWidth - 24.5}, 0.5)`"
+          @click="addTask"
+          style="cursor: pointer;"
+        >
+          <rect fill="white" stroke="#999" x="0" y="0" width="20" height="20" rx="4" ry="4" />
+          <line x1="10" x2="10" y1="5" y2="15" stroke="ForestGreen" />
+          <line x1="5" x2="15" y1="10" y2="10" stroke="ForestGreen" />
+        </g>
       </g>
     </svg>
 
@@ -444,5 +447,9 @@ svg.gantt {
   margin-left: 1em;
   font-size: 0.7em;
   cursor: pointer;
+}
+
+.topNav{
+  opacity: 1 !important;
 }
 </style>
