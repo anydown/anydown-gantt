@@ -82,6 +82,18 @@
               @pointerdown="startDrag($event, index)"
               @dblclick="editTask(index)"
             />
+            <rect
+              class="task-resize"
+              @pointerdown="startResize($event, index)"
+              :x="scaleLength(task.end - task.start) - 4"
+              y="4"
+              width="8"
+              height="24"
+              fill="black"
+              opacity="0"
+              style="cursor: ew-resize;"
+              stroke-width="4"
+            />
 
             <!-- inline editing -->
             <foreignObject
@@ -172,7 +184,7 @@ const holiday = require("@holiday-jp/holiday_jp");
 
 export default {
   props: {
-    input: String
+    input: String,
   },
   data() {
     return {
@@ -182,14 +194,14 @@ export default {
       selectedIndex: -1,
       dragOffset: {
         x: 0,
-        y: 0
+        y: 0,
       },
       dragging: "none",
       dragoverIndex: -1,
       longView: false,
       displayOffset: 0,
       editing: -1,
-      editingText: ""
+      editingText: "",
     };
   },
   methods: {
@@ -239,9 +251,16 @@ export default {
       this.dragOffset.y = e.offsetY - index * 32 - 48;
 
       const len = this.selectedItem.end - this.selectedItem.start;
-      if (e.offsetX > this.scale(this.selectedItem.end) - 10) {
-        this.dragging = "resize-x";
-      }
+      this.onDrag(e);
+    },
+    startResize(e, index){
+      const el = e.currentTarget;
+      el.setPointerCapture(e.pointerId);
+
+      this.selectedIndex = index;
+      this.dragOffset.x = e.offsetX - this.scale(this.selectedItem.start);
+      this.dragOffset.y = e.offsetY - index * 32 - 48;
+      this.dragging = "resize-x";
       this.onDrag(e);
     },
     stopDrag() {
@@ -291,7 +310,7 @@ export default {
       this.tasks.push({
         name: "New Task",
         start: util.getRelativeDate(0).getTime(),
-        end: util.getRelativeDate(1).getTime()
+        end: util.getRelativeDate(1).getTime(),
       });
       this.$emit("change", gantt.serialize(this.tasks));
       this.editTask(this.tasks.length - 1);
@@ -299,12 +318,12 @@ export default {
     moveRange(offset) {
       const moveAmount = offset * (this.longView ? 31 : 7);
       this.displayOffset += moveAmount;
-    }
+    },
   },
   watch: {
     input() {
       this.setTasks(this.input);
-    }
+    },
   },
   computed: {
     lines() {
@@ -319,11 +338,11 @@ export default {
       return this.longView
         ? {
             start: 31 * -1 + this.displayOffset,
-            end: 31 * -1 + viewRange + this.displayOffset
+            end: 31 * -1 + viewRange + this.displayOffset,
           }
         : {
             start: -2 + this.displayOffset,
-            end: -2 + viewRange + this.displayOffset
+            end: -2 + viewRange + this.displayOffset,
           };
     },
     selectedItem() {
@@ -332,7 +351,7 @@ export default {
     timeRange() {
       return [
         util.getRelativeDate(this.displayRange.start).getTime(),
-        util.getRelativeDate(this.displayRange.end).getTime()
+        util.getRelativeDate(this.displayRange.end).getTime(),
       ];
     },
     displayRangeLength() {
@@ -346,7 +365,7 @@ export default {
       const reldate = util.getRelativeDate(0);
       const t = ((reldate.getTime() - start) / len) * this.svgWidth;
       return Math.round(t);
-    }
+    },
   },
   mounted() {
     this.setTasks(this.input);
@@ -355,7 +374,7 @@ export default {
       this.svgWidth = this.$el.clientWidth;
     });
     this.svgWidth = this.$el.clientWidth;
-  }
+  },
 };
 
 function generateLineByRange(start, end, displayRange, svgWidth) {
@@ -393,7 +412,7 @@ function generateLineByRange(start, end, displayRange, svgWidth) {
       x: Math.round(t),
       label: reldate.getDate(),
       color: color,
-      labelMonth: monthStr
+      labelMonth: monthStr,
     });
   }
   return lines;
@@ -449,7 +468,7 @@ svg.gantt {
   cursor: pointer;
 }
 
-.topNav{
+.topNav {
   opacity: 1 !important;
 }
 </style>
